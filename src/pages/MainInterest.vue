@@ -5,46 +5,66 @@
     </div>
     <div class="interest__items">
       <div class="item"
-           v-for="(item, index) in 5"
-           :key="index"
-           :class="[ index%2 === 1 ? 'self-end' : '', once === item ? 'select' : '']"
-           :style="setValues()"
-           @click="selectItem(item)"
+           v-for="(item, index) in interests"
+           :key="item.id"
+           :class="[ index%2 === 1 ? 'self-end' : '', choose === item.id ? 'select' : '']"
+           :style="setValues(item.color)"
+           @click="selectItem(item.id)"
       >
-        sex
+        {{ item.title }}
       </div>
     </div>
-    <div class="button" v-if="once">
-      <q-btn to="/interests" color="yellow-1" text-color="black" label="Choose other interests" size="24px" no-caps />
+    <div class="button" :disabled="!choose">
+      <q-btn @click="chooseMainInterest" color="yellow-1" text-color="black" label="Choose other interests" size="24px" no-caps />
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
   data () {
     return {
-      once: null
+      choose: null
     }
   },
   watch: {
-    once: function () {
-      return this.once
+    choose: function () {
+      return this.choose
     }
   },
+  computed: {
+    ...mapGetters({
+      interests: 'interests/interests',
+      token: 'user/token'
+    })
+  },
   methods: {
+    ...mapActions({
+      loadInterests: 'interests/LOAD_INTERESTS',
+      logout: 'user/AUTH_LOGOUT',
+      selectInterest: 'interests/SELECT_MAIN_INTEREST'
+    }),
     randomNumber (min, max) {
       return Math.random() * (max - min) + min
     },
-    selectItem (elem) {
-      this.once = elem
+    chooseMainInterest () {
+      this.selectInterest(this.choose)
+        .then(() => {
+          this.$router.push('/interests')
+        })
     },
-    setValues () {
+    selectItem (elem) {
+      this.choose = elem
+    },
+    setValues (color) {
       const values = {
         left: '',
         right: '',
         top: '',
-        bottom: ''
+        bottom: '',
+        background: color
       }
       values.left = this.randomNumber(0, 25) + 'px'
       values.right = this.randomNumber(0, 25) + 'px'
@@ -52,15 +72,18 @@ export default {
       values.bottom = this.randomNumber(0, 30) + 'px'
       return values
     }
+  },
+  beforeMount () {
+    this.loadInterests()
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .select {
-  background: springgreen !important;
   height: 155px !important;
   width: 155px !important;
+  opacity: 1 !important;
 }
 .interest {
   padding: 60px 35px 40px 35px;
@@ -68,7 +91,7 @@ export default {
     display: flex;
     justify-content: center;
     margin-top: 60px;
-    a {
+    button {
       opacity: 0.8;
       border-radius: 10px;
       width: 270px;
@@ -106,10 +129,10 @@ export default {
       width: 140px;
       height: 140px;
       border-radius: 50%;
-      background: #D8D8D8;
       font-size: 24px;
       line-height: 28px;
       cursor: default;
+      opacity: 0.5;
     }
   }
 }

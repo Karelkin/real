@@ -9,7 +9,8 @@ const routes = [
       { path: '/chats', component: () => import('pages/Chats') },
       { path: '/interests', component: () => import('pages/Interests') },
       { path: '/chat', component: () => import('pages/Chat') },
-      { path: '/login', component: () => import('pages/Login') }
+      { name: 'login', path: '/login', component: () => import('pages/Login') },
+      { path: '/registration', component: () => import('pages/Registration') }
     ]
   }
 ]

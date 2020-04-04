@@ -36,6 +36,7 @@
       font-size: 36px;
       line-height: 42px;
       color: #000000;
+      padding-bottom: 30px;
     }
   }
 }

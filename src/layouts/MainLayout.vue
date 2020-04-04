@@ -11,12 +11,13 @@
 <script>
 export default {
   name: 'MainLayout',
-
-  components: {
-  },
-
   data () {
     return {}
+  },
+  beforeMount () {
+    if (!localStorage.getItem('user-token')) {
+      this.$router.push('/login')
+    }
   }
 }
 </script>

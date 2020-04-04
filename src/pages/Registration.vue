@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="login__title">
-      <h2>Sign in</h2>
+      <h2>Sign up</h2>
     </div>
     <div class="login__block">
       <q-card class="block">
@@ -10,7 +10,7 @@
           <q-input class="q-mb-md" v-model="user.password" filled type="password" hint="Password" />
         </div>
         <q-card-actions class="button q-mt-lg" align="center">
-          <q-btn @click="login(user)" color="yellow-1" text-color="black" label="Sign in" size="24px" no-caps />
+          <q-btn @click="register(user)" color="yellow-1" text-color="black" label="Sign up" size="24px" no-caps />
         </q-card-actions>
         <div class="links">
           <router-link to="/registration" exact-active-class='link-active'>Sign up</router-link>
@@ -29,22 +29,21 @@ export default {
     return {
       user: {
         login: null,
-        password: null,
-        device: Math.random()
+        password: null
       }
     }
   },
   methods: {
     ...mapActions({
-      loginRequest: 'user/AUTH_REQUEST'
+      registerRequest: 'user/REGISTER_REQUEST'
     }),
-    login (user) {
-      this.loginRequest(user)
+    register (user) {
+      this.registerRequest(user)
         .then(() => {
-          this.$router.push('/')
+          this.$router.push('/login')
         })
         .catch(() => {
-          this.$router.push('/login')
+          this.$router.push('/register')
         })
     }
   }

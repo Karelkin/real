@@ -7,12 +7,13 @@
         ref="vueswing"
     >
       <div
-          v-for="(item, index) in 10"
-          :key="item"
-          :id="index"
+          v-for="(item) in subsInterests[0].subinterests"
+          :key="item.id"
+          :id="item.id"
           class="card"
+          :style="'background:' + subsInterests[0].color"
       >
-        <img src="https://picsum.photos/200/350" alt="">
+        <p>{{ item.title }}</p>
       </div>
     </vue-swing>
     <div class="button" v-if="show">
@@ -22,7 +23,9 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import VueSwing from 'vue-swing'
+
 export default {
   name: 'app',
   components: { VueSwing },
@@ -41,7 +44,16 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters({
+      subsInterests: 'interests/subsInterests'
+    })
+  },
   methods: {
+    ...mapActions({
+      loadSubsInterests: 'interests/LOAD_SUBS_INTERESTS',
+      selectSubsInterest: 'interests/SELECT_SUBS_INTEREST'
+    }),
     swing () {
       const cards = this.$refs.vueswing.cards
       cards[cards.length - 1].throwOut(
@@ -58,20 +70,41 @@ export default {
       document.getElementById(`${target.id}`).classList.remove('like')
       if (VueSwing.Direction.LEFT === throwDirection) {
         document.getElementById(`${target.id}`).classList.add('dislike')
+        const selectSub = {
+          id: target.id,
+          select: {
+            is_like: false
+          }
+        }
         this.dislikes.push(target.id)
+        this.selectSubsInterest(selectSub)
       } else {
         document.getElementById(`${target.id}`).classList.add('like')
+        const selectSub = {
+          id: target.id,
+          select: {
+            is_like: true
+          }
+        }
         this.likes.push(target.id)
+        this.selectSubsInterest(selectSub)
       }
-      if (this.likes.length + this.dislikes.length === 10) {
+      if (this.likes.length + this.dislikes.length === this.subsInterests[0].subinterests.length) {
         this.show = true
       }
     }
+  },
+  beforeMount () {
+    this.loadSubsInterests()
   }
 }
 </script>
 
 <style lang="scss">
+.like,
+.dislike {
+  z-index: 1 !important;
+}
 .like:before {
   content: 'LIKE';
   color: springgreen;
@@ -126,5 +159,10 @@ export default {
   top: calc(20% - 100px);
   width: 200px;
   overflow: hidden;
+  z-index: 999;
+  p {
+    font-size: 40px;
+    transform: rotate(-45deg);
+  }
 }
 </style>

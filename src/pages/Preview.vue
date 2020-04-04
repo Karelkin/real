@@ -18,10 +18,10 @@
     <transition name="fade">
       <preview5 v-show="previewShow === 'preview-5'" />
     </transition>
-    <div class="button" @click="nextPage" v-if="currentPage !== 5 && previewShow !== 'preview-0'">
+    <div class="button" @click="nextPage" v-if="btnNextShow">
       <q-btn color="yellow-1" text-color="black" label="Next" size="24px" no-caps />
     </div>
-    <div class="button" v-if="currentPage === 5">
+    <div class="button" v-if="btnRedirectShow">
       <q-btn to="/main-interest" color="yellow-1" text-color="black" label="Customize your feed" size="24px" no-caps />
     </div>
   </q-page>
@@ -39,7 +39,9 @@ export default {
   data () {
     return {
       previewShow: 'preview-0',
-      currentPage: 1
+      currentPage: 1,
+      btnNextShow: false,
+      btnRedirectShow: false
     }
   },
   components: {
@@ -52,6 +54,10 @@ export default {
   },
   methods: {
     nextPage () {
+      if (this.currentPage === 4) {
+        this.btnNextShow = false
+        this.btnRedirectShow = true
+      }
       this.currentPage++
       this.previewShow = 'preview-' + this.currentPage
     }
@@ -59,6 +65,7 @@ export default {
   beforeMount () {
     setTimeout(() => {
       this.previewShow = 'preview-1'
+      this.btnNextShow = true
     }, 2000)
   }
 }
