@@ -11,6 +11,17 @@ const getters = {
 }
 
 const actions = {
+  SEND_MESSAGE ({ commit }, data) {
+    return new Promise((resolve, reject) => {
+      API.post(`/api/rooms/${data.channel}/message`, { message: data.message })
+        .then((response) => {
+          resolve(response)
+        })
+        .catch((error) => {
+          reject(error)
+        })
+    })
+  },
   LOAD_ROOMS ({ commit }) {
     return new Promise((resolve, reject) => {
       API.get('api/rooms')
@@ -22,7 +33,6 @@ const actions = {
           if (error.response.data.code === 111 || error.response.data.code === 112) {
             commit('SET_CREATE')
           }
-          // console.log(error.response.data.code === 111 || error.response.data.code === 112)
           reject(error)
         })
     })

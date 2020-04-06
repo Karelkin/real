@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   data () {
@@ -34,14 +34,27 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters({
+      profile: 'user/profile'
+    })
+  },
   methods: {
     ...mapActions({
-      loginRequest: 'user/AUTH_REQUEST'
+      loginRequest: 'user/AUTH_REQUEST',
+      loadProfile: 'user/LOAD_PROFILE'
     }),
     login (user) {
       this.loginRequest(user)
         .then(() => {
-          this.$router.push('/')
+          this.loadProfile()
+            .then(() => {
+              if (this.profile.interests[0].subinterests.length > 0) {
+                this.$router.push('/chats')
+              } else {
+                this.$router.push('/')
+              }
+            })
         })
         .catch(() => {
           this.$router.push('/login')

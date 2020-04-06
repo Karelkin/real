@@ -1,20 +1,44 @@
 <template>
   <div class="chat">
-    <div class="chat__title">
-      CHAT #777
+    <div class="chat__title justify-between">
+      <div class="flex items-center">
+        <router-link to="/chats">
+          <q-btn round size="12px" color="yellow-1" icon="reply" />
+        </router-link>
+        <p>CHAT {{ this.$route.params.id }}</p>
+      </div>
+      <div>
+        <q-btn class="self-end" size="12px" @click="voice" round color="yellow-1" icon="mic" />
+        <q-btn class="self-end q-ml-sm" size="12px" @click="mute" round color="yellow-1" icon="volume_mute" />
+      </div>
     </div>
-    <div id="audio-wrapper">
+    <div class="chat__messages">
+      <q-infinite-scroll reverse>
+        <q-chat-message
+            v-for="(item, index) in messages"
+            :key="index"
+            :name="item.user.login"
+            :avatar="item.user.img_url"
+            :text="[item.message]"
+            :sent="item.user.login === profile.login"
+        />
+      </q-infinite-scroll>
+    </div>
+    <div id="audio-wrapper" class="hidden">
       <div class="label">Remote audio:</div>
       <audio id="audio2" autoplay controls></audio>
     </div>
-<!--    <button id="callButton" @click="call" :disabled="callButton">Call</button>-->
+    <div class="chat__input">
+      <input type="text" v-model="message">
+      <q-btn @click="sendMessage(message)" round color="yellow-1" size="12px" icon="send" />
+    </div>
   </div>
 </template>
 
 <script>
 import Peer from 'simple-peer'
 import Pusher from 'pusher-js'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   data () {
@@ -22,7 +46,12 @@ export default {
       peers: {},
       userStream: null,
       mainUserId: null,
-      channel: null
+      channel: null,
+      message: '',
+      messages: [],
+      members: [],
+      voiceProp: true,
+      muteProp: false
     }
   },
   computed: {
@@ -31,6 +60,29 @@ export default {
     })
   },
   methods: {
+    ...mapActions({
+      send: 'chats/SEND_MESSAGE'
+    }),
+    mute () {
+      this.muteProp = !this.muteProp
+      this.members.forEach(elem => {
+        document.getElementById(`audiostream-${elem.id}`).muted = this.muteProp
+      })
+    },
+    voice () {
+      this.voiceProp = !this.voiceProp
+      this.userStream.getAudioTracks()[0].enabled = this.voiceProp
+    },
+    sendMessage (message) {
+      const data = {
+        channel: `presence-voice-channel-${this.$route.params.id}`,
+        message: message
+      }
+      this.send(data)
+        .then(() => {
+          this.message = ''
+        })
+    },
     getPermissions () {
       // eslint-disable-next-line promise/param-names,no-async-promise-executor
       return new Promise(async (res, rej) => {
@@ -42,14 +94,10 @@ export default {
         }
       })
     },
-    // getRandomInt (max) {
-    //   return Math.floor(Math.random() * Math.floor(max))
-    // },
     pusherSetup () {
-      // statusText.textContent = 'Установка связи'
       Pusher.logToConsole = true
       const pusher = new Pusher('ef46f298b0c2bd8c3f46', {
-        authEndpoint: '/api/auth/pusher',
+        authEndpoint: 'https://91f1a177.ngrok.io/api/auth/pusher',
         cluster: 'eu',
         auth: {
           headers: {
@@ -61,34 +109,49 @@ export default {
 
       this.channel = pusher.subscribe(`presence-voice-channel-${this.$route.params.id}`)
 
-      /* channel.bind('pusher:subscription_succeeded', (members) => {
-           members.each(function(member) {
-               console.log(member);
-               peers[member.id] = startPeer(member.id);
-           });
-       }); */
-
       this.channel.bind('pusher:member_added', (member) => {
-        // statusText.textContent = member.id + ' зашёл в чатик'
-        // console.log(member);
         this.peers[member.id] = this.startPeer(member.id)
+        this.members.push(member.info.login)
+        const data = {
+          message: 'Пользователь присоединился',
+          user: {
+            login: member.info.login.login,
+            img_url: member.info.login.img_url
+          }
+        }
+        this.messages.push(data)
+      })
+
+      this.channel.bind('pusher:member_removed', (member) => {
+        const data = {
+          message: 'Пользователь отключился',
+          user: {
+            login: member.info.login.login,
+            img_url: member.info.login.img_url
+          }
+        }
+        // const data = {
+        //   message: 'Пользователь отключился',
+        //   login: member.info.login.login,
+        //   img_url: member.info.login.img_url
+        // }
+        this.messages.push(data)
+        // this.
+      })
+
+      this.channel.bind('message-created', (data) => {
+        this.messages.push(data)
       })
 
       this.channel.bind('client-signal-' + this.mainUserId, (signal) => {
-        // console.log('Signal bind')
-
         const signalUserId = signal.userId
-
         let peer = this.peers[signalUserId]
-
         if (signalUserId === this.mainUserId) {
           return
         }
 
         // if peer is not already exists, we got an incoming call
         if (peer === undefined) {
-          // console.log('Peer is undefined')
-
           peer = this.startPeer(signalUserId, false)
         }
 
@@ -112,8 +175,6 @@ export default {
           userId: this.mainUserId,
           data: data
         })
-
-        // statusText.textContent = 'Ура';
       })
 
       peer.on('connect', () => {
@@ -121,8 +182,6 @@ export default {
       })
 
       peer.on('stream', (stream) => {
-        // statusText.textContent = 'Сигнал получен';
-
         const newAudioStream = document.createElement('audio')
         newAudioStream.setAttribute('autoplay', 'true')
         newAudioStream.controls = true
@@ -134,12 +193,10 @@ export default {
 
         if (audioStream.srcObject !== stream) {
           audioStream.srcObject = stream
-          // console.log('src Object has been set')
         }
       })
 
       peer.on('close', () => {
-        // console.log('Close up')
         const peer = this.peers[userId]
         if (peer !== undefined) {
           peer.destroy()
@@ -152,8 +209,6 @@ export default {
     }
   },
   beforeMount () {
-    // console.log(this.profile)
-    // console.log(this.$route.params)
     this.getPermissions()
       .then(stream => {
         this.userStream = stream
@@ -173,9 +228,52 @@ export default {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  &__messages {
+    margin: 50px 10px;
+    position: fixed;
+    bottom: 0;
+    width: 95%;
+  }
+  &__input {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    z-index: 999;
+    background: white;
+    height: 45px;
+    padding: 5px 0;
+    box-shadow: 0px -1px 5px rgba(105, 105, 105, 1);
+    input {
+      /*border-radius: 15px;*/
+      padding: 0 10px;
+      margin: 0 15px 0 10px;
+      width: 95%;
+      outline: none;
+      border: none;
+    }
+    button {
+      margin-right: 5px;
+    }
+  }
   &__title {
     border-bottom: 1px solid black;
     padding: 10px;
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    width: 100vw;
+    background: white;
+    display: flex;
+    align-items: center;
+    a {
+      text-decoration: none;
+      margin-right: 10px;
+    }
+    p {
+      margin: 0;
+      font-size: 18px;
+    }
   }
   &__users {
     padding: 30px 35px 40px 35px;

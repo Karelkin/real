@@ -14,13 +14,12 @@
           </div>
         </div>
         <div class="item__interests">
-          <div>sex</div>
-          <div>music</div>
+          <div>{{ profile.interests[0].title }}</div>
         </div>
         <div class="item__users">
-          <img v-for="(image, index) in item.info.users"
+          <img v-for="(user, index) in item.info.users"
                :key="index"
-               :src="'../statics/images/user-' + (index + 1) + '.png'"
+               :src="user.img_url"
                class="absolute"
                :style="'left: ' + (24 * index) + 'px;'"
                height="57"
@@ -46,7 +45,8 @@ export default {
   computed: {
     ...mapGetters({
       rooms: 'chats/rooms',
-      create: 'chats/createRoom'
+      create: 'chats/createRoom',
+      profile: 'user/profile'
     })
   },
   methods: {
@@ -67,10 +67,7 @@ export default {
             info: this.rooms[key]
           }
           this.localRooms.push(roomInfo)
-          // console.log(this.localRooms)
         }
-        // console.log(this.rooms)
-        // console.log(this.createRoom)
       })
       .catch(() => {
         if (this.create) {

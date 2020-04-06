@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'MainLayout',
@@ -17,6 +17,11 @@ export default {
     return {
       show: false
     }
+  },
+  computed: {
+    ...mapGetters({
+      profile: 'user/profile'
+    })
   },
   methods: {
     ...mapActions({
@@ -31,9 +36,10 @@ export default {
       this.loadProfile()
         .then(() => {
           this.show = true
+          if (this.profile.interests[0].subinterests.length > 0) {
+            this.$router.push('/chats')
+          }
         })
-      // console.log(localStorage.getItem('user-token'))
-      // this.$router.push('/chats')
     }
   }
 }
