@@ -7,22 +7,28 @@
       <div class="label">Remote audio:</div>
       <audio id="audio2" autoplay controls></audio>
     </div>
-    <button id="callButton" @click="call" :disabled="callButton">Call</button>
+<!--    <button id="callButton" @click="call" :disabled="callButton">Call</button>-->
   </div>
 </template>
 
 <script>
 import Peer from 'simple-peer'
 import Pusher from 'pusher-js'
+import { mapGetters } from 'vuex'
 
 export default {
   data () {
     return {
       peers: {},
       userStream: null,
-      mainUserId: this.getRandomInt(999999).toString(),
+      mainUserId: null,
       channel: null
     }
+  },
+  computed: {
+    ...mapGetters({
+      profile: 'user/profile'
+    })
   },
   methods: {
     getPermissions () {
@@ -36,23 +42,24 @@ export default {
         }
       })
     },
-    getRandomInt (max) {
-      return Math.floor(Math.random() * Math.floor(max))
-    },
+    // getRandomInt (max) {
+    //   return Math.floor(Math.random() * Math.floor(max))
+    // },
     pusherSetup () {
       // statusText.textContent = 'Установка связи'
       Pusher.logToConsole = true
       const pusher = new Pusher('ef46f298b0c2bd8c3f46', {
-        authEndpoint: 'https://59cfeadd.ngrok.io/api/pusher/auth',
+        authEndpoint: '/api/auth/pusher',
         cluster: 'eu',
         auth: {
-          params: {
-            test_key: this.mainUserId
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('user-token'),
+            Accept: 'application/json'
           }
         }
       })
 
-      this.channel = pusher.subscribe('presence-my-channel')
+      this.channel = pusher.subscribe(`presence-voice-channel-${this.$route.params.id}`)
 
       /* channel.bind('pusher:subscription_succeeded', (members) => {
            members.each(function(member) {
@@ -68,7 +75,7 @@ export default {
       })
 
       this.channel.bind('client-signal-' + this.mainUserId, (signal) => {
-        console.log('Signal bind')
+        // console.log('Signal bind')
 
         const signalUserId = signal.userId
 
@@ -80,7 +87,7 @@ export default {
 
         // if peer is not already exists, we got an incoming call
         if (peer === undefined) {
-          console.log('Peer is undefined')
+          // console.log('Peer is undefined')
 
           peer = this.startPeer(signalUserId, false)
         }
@@ -110,7 +117,7 @@ export default {
       })
 
       peer.on('connect', () => {
-        console.log('Connected!')
+        // console.log('Connected!')
       })
 
       peer.on('stream', (stream) => {
@@ -127,12 +134,12 @@ export default {
 
         if (audioStream.srcObject !== stream) {
           audioStream.srcObject = stream
-          console.log('src Object has been set')
+          // console.log('src Object has been set')
         }
       })
 
       peer.on('close', () => {
-        console.log('Close up')
+        // console.log('Close up')
         const peer = this.peers[userId]
         if (peer !== undefined) {
           peer.destroy()
@@ -145,9 +152,12 @@ export default {
     }
   },
   beforeMount () {
+    // console.log(this.profile)
+    // console.log(this.$route.params)
     this.getPermissions()
       .then(stream => {
         this.userStream = stream
+        this.mainUserId = this.profile.id
 
       // statusText.textContent = 'Успешно... Нажмите Call';
       })
@@ -156,156 +166,6 @@ export default {
       })
   }
 }
-// let statusText = document.getElementById('status');
-// let peers = {};
-//
-// let userStream = null;
-// let mainUserId = getRandomInt(999999).toString();
-//
-// let chatId = 1;
-//
-// let channel = null;
-
-// console.log('ID: ', mainUserId);
-
-// statusText.textContent = 'Запрос на права';
-
-// getPermissions().then(stream => {
-//   userStream = stream;
-//
-//   statusText.textContent = 'Успешно... Нажмите Call';
-// });
-
-// window.peerCall = function() {
-//   const peerId = document.querySelector('#peerCaller');
-//
-//   pusherSetup();
-//
-//   //peers[peerId.value] = startPeer(peerId.value);
-// };
-
-// peers[mainUserId] = startPeer(mainUserId);
-
-// function getRandomInt(max) {
-//   return Math.floor(Math.random() * Math.floor(max));
-// }
-
-// function pusherSetup() {
-//   statusText.textContent = 'Установка связи';
-//
-//   let pusher = new Pusher('ef46f298b0c2bd8c3f46', {
-//     authEndpoint: 'https://59cfeadd.ngrok.io/api/pusher/auth',
-//     cluster: 'eu',
-//     auth: {
-//       params: {
-//         test_key: mainUserId
-//       }
-//     }
-//   });
-//
-//   channel = pusher.subscribe('presence-my-channel');
-//
-//   /* channel.bind('pusher:subscription_succeeded', (members) => {
-//        members.each(function(member) {
-//            console.log(member);
-//            peers[member.id] = startPeer(member.id);
-//        });
-//    }); */
-//
-//   channel.bind('pusher:member_added', (member) => {
-//     statusText.textContent = member.id + ' зашёл в чатик';
-//     console.log(member);
-//     peers[member.id] = startPeer(member.id);
-//   });
-//
-//   channel.bind('client-signal-' + mainUserId, (signal) => {
-//     console.log('Signal bind');
-//
-//     const signalUserId = signal.userId;
-//
-//     let peer = peers[signalUserId];
-//
-//     if (signalUserId === mainUserId) {
-//       return
-//     }
-//
-//     // if peer is not already exists, we got an incoming call
-//     if (peer === undefined) {
-//       console.log('Peer is undefined');
-//
-//       peer = startPeer(signalUserId, false);
-//     }
-//
-//     peer.signal(signal.data);
-//   });
-// }
-
-// function getPermissions() {
-//   return new Promise(async (res, rej) => {
-//     try {
-//       const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-//       res(stream);
-//     } catch(err) {
-//       throw new Error(`Unable to fetch stream ${err}`);
-//     }
-//   });
-// }
-
-// function startPeer(userId, initiator = true) {
-//   if (userId === mainUserId) {
-//     return ;
-//   }
-//
-//   const peer = new Peer({
-//     initiator,
-//     stream: userStream,
-//     trickle: false,
-//   });
-//
-//   peer.on('signal', (data) => {
-//     channel.trigger('client-signal-' + userId, {
-//       type: 'signal',
-//       userId: mainUserId,
-//       data: data
-//     });
-//
-//     statusText.textContent = 'Ура';
-//   });
-//
-//   peer.on('connect', () => {
-//     console.log('Connected!');
-//   });
-//
-//   peer.on('stream', (stream) => {
-//     statusText.textContent = 'Сигнал получен';
-//
-//     let newAudioStream = document.createElement('audio');
-//     newAudioStream.setAttribute('autoplay', 'true');
-//     newAudioStream.controls = true;
-//     newAudioStream.autoplay = true;
-//     newAudioStream.id = 'audiostream-' + userId;
-//     document.getElementsByTagName('body')[0].appendChild(newAudioStream);
-//
-//     const audioStream = document.getElementById('audiostream-' + userId);
-//
-//     if (audioStream.srcObject !== stream) {
-//       audioStream.srcObject = stream;
-//       console.log('src Object has been set');
-//     }
-//   });
-//
-//   peer.on('close', () => {
-//     console.log('Close up');
-//     let peer = peers[userId];
-//     if(peer !== undefined) {
-//       peer.destroy();
-//     }
-//
-//     peers[userId] = undefined;
-//   });
-//
-//   return peer;
-// }
 </script>
 
 <style lang="scss" scoped>

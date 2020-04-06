@@ -3,16 +3,30 @@ import API from '../api.js'
 const state = {
   status: '',
   user: {},
-  token: localStorage.getItem('user-token') || ''
+  token: localStorage.getItem('user-token') || '',
+  profile: {}
 }
 
 const getters = {
   status: state => state.status,
   user: state => state.user,
-  token: state => state.token
+  token: state => state.token,
+  profile: state => state.profile
 }
 
 const actions = {
+  LOAD_PROFILE ({ commit }) {
+    return new Promise((resolve, reject) => {
+      API.get('api/profile')
+        .then((response) => {
+          commit('SET_PROFILE', response.data.data)
+          resolve(response)
+        })
+        .catch((error) => {
+          reject(error)
+        })
+    })
+  },
   REGISTER_REQUEST ({ commit }, user) {
     return new Promise((resolve, reject) => {
       commit('REGISTER_REQUEST')
@@ -53,6 +67,9 @@ const actions = {
 }
 
 const mutations = {
+  SET_PROFILE (state, payload) {
+    state.profile = payload
+  },
   AUTH_REQUEST (state) {
     state.status = 'loading'
   },

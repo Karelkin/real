@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-page-container>
+    <q-page-container v-if="show">
       <transition name="slide-left">
         <router-view></router-view>
       </transition>
@@ -9,14 +9,31 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'MainLayout',
   data () {
-    return {}
+    return {
+      show: false
+    }
+  },
+  methods: {
+    ...mapActions({
+      loadProfile: 'user/LOAD_PROFILE'
+    })
   },
   beforeMount () {
     if (!localStorage.getItem('user-token')) {
       this.$router.push('/login')
+      this.show = true
+    } else {
+      this.loadProfile()
+        .then(() => {
+          this.show = true
+        })
+      // console.log(localStorage.getItem('user-token'))
+      // this.$router.push('/chats')
     }
   }
 }

@@ -3,11 +3,11 @@
     <div class="chats__title">
       <h2>Let’s talk!</h2>
     </div>
-    <div class="chats__items">
-      <router-link class="item" to="/chat">
+    <div class="chats__items" v-if="localRooms">
+      <router-link v-for="item in localRooms" :key="item.id" class="item" :to="{ path:`/chat/${item.id}`, params: { roomId: item.id } }">
         <div class="item__percent">
           <div class="item__percent_number">
-            50%
+            {{ Math.floor(item.info.intersect) + '%' }}
           </div>
           <div class="item__percent_text">
             match
@@ -18,7 +18,7 @@
           <div>music</div>
         </div>
         <div class="item__users">
-          <img v-for="(image, index) in 5"
+          <img v-for="(image, index) in item.info.users"
                :key="index"
                :src="'../statics/images/user-' + (index + 1) + '.png'"
                class="absolute"
@@ -29,12 +29,57 @@
           >
         </div>
       </router-link>
-      <div class="item">
-        fds
-      </div>
     </div>
   </div>
 </template>
+
+<script>
+import { mapGetters, mapActions } from 'vuex'
+
+export default {
+  data () {
+    return {
+      id: null,
+      localRooms: []
+    }
+  },
+  computed: {
+    ...mapGetters({
+      rooms: 'chats/rooms',
+      create: 'chats/createRoom'
+    })
+  },
+  methods: {
+    ...mapActions({
+      loadRooms: 'chats/LOAD_ROOMS'
+    }),
+    createRoom () {
+      this.id = '_' + Math.random().toString(36).substr(2, 9)
+      this.$router.push({ path: `/chat/${this.id}`, params: { roomId: this.id } })
+    }
+  },
+  beforeMount () {
+    this.loadRooms()
+      .then(() => {
+        for (const key in this.rooms) {
+          const roomInfo = {
+            id: key.substring(23),
+            info: this.rooms[key]
+          }
+          this.localRooms.push(roomInfo)
+          // console.log(this.localRooms)
+        }
+        // console.log(this.rooms)
+        // console.log(this.createRoom)
+      })
+      .catch(() => {
+        if (this.create) {
+          this.createRoom()
+        }
+      })
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .chats {

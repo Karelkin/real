@@ -5,10 +5,11 @@
         @throwin="onThrowin"
         :config="config"
         ref="vueswing"
+        v-if="load"
     >
       <div
-          v-for="(item) in subsInterests[0].subinterests"
-          :key="item.id"
+          v-for="(item, index) in subsInterests[0].subinterests"
+          :key="index"
           :id="item.id"
           class="card"
           :style="'background:' + subsInterests[0].color"
@@ -32,15 +33,19 @@ export default {
   data () {
     return {
       show: false,
+      load: false,
       likes: [],
       dislikes: [],
+      cards: null,
+      currentElem: null,
       config: {
         allowedDirections: [
           VueSwing.Direction.LEFT,
           VueSwing.Direction.RIGHT
         ],
         minThrowOutDistance: 190,
-        maxThrowOutDistance: 200
+        maxThrowOutDistance: 195,
+        maxRotation: 10
       }
     }
   },
@@ -54,13 +59,9 @@ export default {
       loadSubsInterests: 'interests/LOAD_SUBS_INTERESTS',
       selectSubsInterest: 'interests/SELECT_SUBS_INTEREST'
     }),
-    swing () {
-      const cards = this.$refs.vueswing.cards
-      cards[cards.length - 1].throwOut(
-        Math.random() * 100 - 50,
-        Math.random() * 100 - 50
-      )
-    },
+    // swing () {
+    //   this.cards = this.$refs.vueswing.cards
+    // },
     onThrowin ({ target, throwDirection }) {
       document.getElementById(`${target.id}`).classList.remove('dislike')
       document.getElementById(`${target.id}`).classList.remove('like')
@@ -69,6 +70,9 @@ export default {
       document.getElementById(`${target.id}`).classList.remove('dislike')
       document.getElementById(`${target.id}`).classList.remove('like')
       if (VueSwing.Direction.LEFT === throwDirection) {
+        // const stack = VueSwing.Stack()
+        // const card = stack.createCard(target)
+        // card.throwOut(-1, 0)
         document.getElementById(`${target.id}`).classList.add('dislike')
         const selectSub = {
           id: target.id,
@@ -96,6 +100,9 @@ export default {
   },
   beforeMount () {
     this.loadSubsInterests()
+      .then(() => {
+        this.load = true
+      })
   }
 }
 </script>
@@ -104,6 +111,7 @@ export default {
 .like,
 .dislike {
   z-index: 1 !important;
+  pointer-events: none;
 }
 .like:before {
   content: 'LIKE';

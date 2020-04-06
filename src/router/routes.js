@@ -8,7 +8,7 @@ const routes = [
       { path: '/main-interest', component: () => import('pages/MainInterest') },
       { path: '/chats', component: () => import('pages/Chats') },
       { path: '/interests', component: () => import('pages/Interests') },
-      { path: '/chat', component: () => import('pages/Chat') },
+      { path: '/chat/:id', props: true, component: () => import('pages/Chat') },
       { name: 'login', path: '/login', component: () => import('pages/Login') },
       { path: '/registration', component: () => import('pages/Registration') }
     ]
