@@ -102,7 +102,7 @@ export default {
     pusherSetup () {
       Pusher.logToConsole = true
       const pusher = new Pusher('ef46f298b0c2bd8c3f46', {
-        authEndpoint: '/api/auth/pusher',
+        authEndpoint: 'https://real-app.ru/api/auth/pusher',
         cluster: 'eu',
         auth: {
           headers: {
@@ -147,11 +147,6 @@ export default {
             img_url: member.info.login.img_url
           }
         }
-        // const data = {
-        //   message: 'Пользователь отключился',
-        //   login: member.info.login.login,
-        //   img_url: member.info.login.img_url
-        // }
         this.messages.push(data)
         // this.
       })
@@ -236,13 +231,13 @@ export default {
       .then(() => {
         this.pusherSetup()
       })
-      .then(() => {
-        const channel = `presence-voice-channel-${this.$route.params.id}`
-        this.loadUsers(channel)
-          .then(() => {
-            this.members = this.roomUsers
-          })
-      })
+    setTimeout(() => {
+      const channel = `presence-voice-channel-${this.$route.params.id}`
+      this.loadUsers(channel)
+        .then(() => {
+          this.members = this.roomUsers
+        })
+    }, 2500)
   }
 }
 </script>
