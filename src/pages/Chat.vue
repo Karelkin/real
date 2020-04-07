@@ -3,7 +3,7 @@
     <div class="chat__title justify-between">
       <div class="flex items-center">
         <q-btn @click="back" round size="12px" color="yellow-1" icon="reply" />
-        <p>CHAT {{ this.$route.params.id }}</p>
+        <p>Участников: {{ this.members.length }}</p>
       </div>
       <div>
         <q-btn class="self-end" size="12px" @click="voice" round color="yellow-1" :icon="!voiceProp ? 'mic_off' : 'mic'" />
