@@ -2,9 +2,7 @@
   <div class="chat">
     <div class="chat__title justify-between">
       <div class="flex items-center">
-<!--        <router-link to="/chats">-->
         <q-btn @click="back" round size="12px" color="yellow-1" icon="reply" />
-<!--        </router-link>-->
         <p>CHAT {{ this.$route.params.id }}</p>
       </div>
       <div>
@@ -104,7 +102,7 @@ export default {
     pusherSetup () {
       Pusher.logToConsole = true
       const pusher = new Pusher('ef46f298b0c2bd8c3f46', {
-        authEndpoint: 'https://real-app.ru/api/auth/pusher',
+        authEndpoint: '/api/auth/pusher',
         cluster: 'eu',
         auth: {
           headers: {
