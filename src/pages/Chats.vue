@@ -5,7 +5,7 @@
       <q-btn @click="logoutProfile" round size="12px" color="yellow-1" icon="exit_to_app" />
     </div>
     <div class="chats__items" v-if="localRooms">
-      <router-link v-for="item in localRooms" :key="item.id" class="item" :to="{ path:`/chat/${item.id}`, params: { roomId: item.id } }">
+      <router-link v-for="item in localRooms" :key="item.id" class="item" :class="item.id === undefined ? 'hiden' : ''" :to="{ path:`/chat/${item.id}`, params: { roomId: item.id } }">
         <div class="item__percent">
           <div class="item__percent_number">
             {{ Math.floor(item.info.intersect) + '%' }}
