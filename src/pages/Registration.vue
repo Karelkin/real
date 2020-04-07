@@ -8,13 +8,14 @@
         <div class="user">
           <q-input class="q-mb-md" v-model="user.login" filled type="text" hint="Login" />
           <q-input class="q-mb-md" v-model="user.password" filled type="password" hint="Password" />
+          <q-input class="q-mb-md" v-model="user.password2" filled type="password" hint="Confirm password" />
         </div>
         <q-card-actions class="button q-mt-lg" align="center">
           <q-btn @click="register(user)" color="yellow-1" text-color="black" label="Sign up" size="24px" no-caps />
         </q-card-actions>
         <div class="links">
-          <router-link to="/registration" exact-active-class='link-active'>Sign up</router-link>
           <router-link to="/login" exact-active-class='link-active'>Sign in</router-link>
+          <router-link to="/registration" exact-active-class='link-active'>Sign up</router-link>
         </div>
       </q-card>
     </div>
@@ -29,7 +30,8 @@ export default {
     return {
       user: {
         login: null,
-        password: null
+        password: null,
+        password2: null
       }
     }
   },

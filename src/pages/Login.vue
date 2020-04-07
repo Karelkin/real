@@ -13,8 +13,8 @@
           <q-btn @click="login(user)" color="yellow-1" text-color="black" label="Sign in" size="24px" no-caps />
         </q-card-actions>
         <div class="links">
-          <router-link to="/registration" exact-active-class='link-active'>Sign up</router-link>
           <router-link to="/login" exact-active-class='link-active'>Sign in</router-link>
+          <router-link to="/registration" exact-active-class='link-active'>Sign up</router-link>
         </div>
       </q-card>
     </div>
