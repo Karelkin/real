@@ -102,7 +102,7 @@ export default {
     pusherSetup () {
       Pusher.logToConsole = true
       const pusher = new Pusher('ef46f298b0c2bd8c3f46', {
-        authEndpoint: 'https://real-app.ru/api/auth/pusher',
+        authEndpoint: '/api/auth/pusher',
         cluster: 'eu',
         auth: {
           headers: {
