@@ -8,8 +8,8 @@
         <p>CHAT {{ this.$route.params.id }}</p>
       </div>
       <div>
-        <q-btn class="self-end" size="12px" @click="voice" round color="yellow-1" :icon="muteProp ? 'mic_off' : 'mic'" />
-        <q-btn class="self-end q-ml-sm" size="12px" @click="mute" round color="yellow-1" :icon="voiceProp ? 'volume_up' : 'volume_off'" />
+        <q-btn class="self-end" size="12px" @click="voice" round color="yellow-1" :icon="voiceProp ? 'mic_off' : 'mic'" />
+        <q-btn class="self-end q-ml-sm" size="12px" @click="mute" round color="yellow-1" :icon="muteProp ? 'volume_up' : 'volume_off'" />
       </div>
     </div>
     <div class="chat__messages">
