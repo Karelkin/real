@@ -2,6 +2,7 @@
   <div class="chats">
     <div class="chats__title">
       <h2>Let’s talk!</h2>
+      <q-btn @click="logoutProfile" round size="12px" color="yellow-1" icon="exit_to_app" />
     </div>
     <div class="chats__items" v-if="localRooms">
       <router-link v-for="item in localRooms" :key="item.id" class="item" :to="{ path:`/chat/${item.id}`, params: { roomId: item.id } }">
@@ -51,11 +52,16 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadRooms: 'chats/LOAD_ROOMS'
+      loadRooms: 'chats/LOAD_ROOMS',
+      logout: 'user/AUTH_LOGOUT'
     }),
     createRoom () {
       this.id = '_' + Math.random().toString(36).substr(2, 9)
       this.$router.push({ path: `/chat/${this.id}`, params: { roomId: this.id } })
+    },
+    logoutProfile () {
+      this.logout()
+      location.href = '/'
     }
   },
   beforeMount () {
@@ -82,6 +88,12 @@ export default {
 .chats {
   padding: 60px 0 30px 0;
   &__title {
+    position: relative;
+    button {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
     h2 {
       margin: 0;
       font-size: 48px;

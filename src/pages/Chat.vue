@@ -2,14 +2,14 @@
   <div class="chat">
     <div class="chat__title justify-between">
       <div class="flex items-center">
-        <router-link to="/chats">
-          <q-btn round size="12px" color="yellow-1" icon="reply" />
-        </router-link>
+<!--        <router-link to="/chats">-->
+        <q-btn @click="back" round size="12px" color="yellow-1" icon="reply" />
+<!--        </router-link>-->
         <p>CHAT {{ this.$route.params.id }}</p>
       </div>
       <div>
-        <q-btn class="self-end" size="12px" @click="voice" round color="yellow-1" icon="mic" />
-        <q-btn class="self-end q-ml-sm" size="12px" @click="mute" round color="yellow-1" icon="volume_mute" />
+        <q-btn class="self-end" size="12px" @click="voice" round color="yellow-1" :icon="muteProp ? 'mic_off' : 'mic'" />
+        <q-btn class="self-end q-ml-sm" size="12px" @click="mute" round color="yellow-1" :icon="voiceProp ? 'volume_up' : 'volume_off'" />
       </div>
     </div>
     <div class="chat__messages">
@@ -56,17 +56,24 @@ export default {
   },
   computed: {
     ...mapGetters({
-      profile: 'user/profile'
+      profile: 'user/profile',
+      roomUsers: 'chats/roomUsers'
     })
   },
   methods: {
     ...mapActions({
-      send: 'chats/SEND_MESSAGE'
+      send: 'chats/SEND_MESSAGE',
+      loadUsers: 'chats/LOAD_ROOM_USERS'
     }),
+    back () {
+      location.href = '/chats'
+    },
     mute () {
       this.muteProp = !this.muteProp
       this.members.forEach(elem => {
-        document.getElementById(`audiostream-${elem.id}`).muted = this.muteProp
+        if (elem.id !== this.profile.id) {
+          document.getElementById(`audiostream-${elem.id}`).muted = this.muteProp
+        }
       })
     },
     voice () {
@@ -97,7 +104,7 @@ export default {
     pusherSetup () {
       Pusher.logToConsole = true
       const pusher = new Pusher('ef46f298b0c2bd8c3f46', {
-        authEndpoint: 'https://91f1a177.ngrok.io/api/auth/pusher',
+        authEndpoint: '/api/auth/pusher',
         cluster: 'eu',
         auth: {
           headers: {
@@ -110,8 +117,14 @@ export default {
       this.channel = pusher.subscribe(`presence-voice-channel-${this.$route.params.id}`)
 
       this.channel.bind('pusher:member_added', (member) => {
+        this.members = []
+        const channel = `presence-voice-channel-${this.$route.params.id}`
+        this.loadUsers(channel)
+          .then(() => {
+            this.members = this.roomUsers
+          })
         this.peers[member.id] = this.startPeer(member.id)
-        this.members.push(member.info.login)
+        // this.members.push(member.info.login)
         const data = {
           message: 'Пользователь присоединился',
           user: {
@@ -123,6 +136,12 @@ export default {
       })
 
       this.channel.bind('pusher:member_removed', (member) => {
+        this.members = []
+        const channel = `presence-voice-channel-${this.$route.params.id}`
+        this.loadUsers(channel)
+          .then(() => {
+            this.members = this.roomUsers
+          })
         const data = {
           message: 'Пользователь отключился',
           user: {
@@ -219,6 +238,13 @@ export default {
       .then(() => {
         this.pusherSetup()
       })
+      .then(() => {
+        const channel = `presence-voice-channel-${this.$route.params.id}`
+        this.loadUsers(channel)
+          .then(() => {
+            this.members = this.roomUsers
+          })
+      })
   }
 }
 </script>
@@ -266,7 +292,7 @@ export default {
     background: white;
     display: flex;
     align-items: center;
-    a {
+    button:first-child {
       text-decoration: none;
       margin-right: 10px;
     }

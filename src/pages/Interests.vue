@@ -18,7 +18,7 @@
       </div>
     </vue-swing>
     <div class="button" v-if="show">
-      <q-btn to="/chats" color="yellow-1" text-color="black" label="Go to chats" size="24px" no-caps />
+      <q-btn @click="next" color="yellow-1" text-color="black" label="Go to chats" size="24px" no-caps />
     </div>
   </div>
 </template>
@@ -43,9 +43,9 @@ export default {
           VueSwing.Direction.LEFT,
           VueSwing.Direction.RIGHT
         ],
-        minThrowOutDistance: 190,
-        maxThrowOutDistance: 195,
-        maxRotation: 10
+        minThrowOutDistance: 155,
+        maxThrowOutDistance: 175,
+        maxRotation: 2
       }
     }
   },
@@ -59,6 +59,9 @@ export default {
       loadSubsInterests: 'interests/LOAD_SUBS_INTERESTS',
       selectSubsInterest: 'interests/SELECT_SUBS_INTEREST'
     }),
+    next () {
+      location.href = '/chats'
+    },
     // swing () {
     //   this.cards = this.$refs.vueswing.cards
     // },
@@ -144,7 +147,7 @@ export default {
     left: 0;
     right: 0;
     margin: 0 auto;
-    a {
+    button {
       opacity: 0.8;
       border-radius: 10px;
       width: 250px;
@@ -160,12 +163,12 @@ export default {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   font-size: 72px;
-  height: 350px;
+  height: 320px;
   justify-content: center;
-  left: calc(50% - 100px);
+  left: calc(50% - 90px);
   position: absolute;
   top: calc(20% - 100px);
-  width: 200px;
+  width: 180px;
   overflow: hidden;
   z-index: 999;
   p {

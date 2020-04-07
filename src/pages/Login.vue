@@ -49,8 +49,9 @@ export default {
         .then(() => {
           this.loadProfile()
             .then(() => {
-              if (this.profile.interests[0].subinterests.length > 0) {
-                this.$router.push('/chats')
+              if (this.profile.interests[0]) {
+                // this.$router.push('/chats')
+                location.href = '/chats'
               } else {
                 this.$router.push('/')
               }

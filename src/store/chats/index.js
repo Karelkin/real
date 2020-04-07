@@ -2,15 +2,29 @@ import API from '../api.js'
 
 const state = {
   interests: {},
-  createRoom: false
+  createRoom: false,
+  roomUsers: []
 }
 
 const getters = {
   rooms: state => state.rooms,
-  createRoom: state => state.createRoom
+  createRoom: state => state.createRoom,
+  roomUsers: state => state.roomUsers
 }
 
 const actions = {
+  LOAD_ROOM_USERS ({ commit }, channel) {
+    return new Promise((resolve, reject) => {
+      API.get(`/api/rooms/${channel}/users`)
+        .then((response) => {
+          commit('SET_ROOM_USERS', response.data.data)
+          resolve(response)
+        })
+        .catch((error) => {
+          reject(error)
+        })
+    })
+  },
   SEND_MESSAGE ({ commit }, data) {
     return new Promise((resolve, reject) => {
       API.post(`/api/rooms/${data.channel}/message`, { message: data.message })
@@ -40,6 +54,9 @@ const actions = {
 }
 
 const mutations = {
+  SET_ROOM_USERS (state, payload) {
+    state.roomUsers = payload
+  },
   SET_ROOMS (state, payload) {
     state.rooms = payload
   },
