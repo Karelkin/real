@@ -1,9 +1,11 @@
 <template>
   <q-layout view="hHh lpR fFf">
     <q-page-container v-if="show">
-      <transition name="slide-left">
-        <router-view></router-view>
-      </transition>
+      <q-page>
+        <transition name="slide-left">
+          <router-view></router-view>
+        </transition>
+      </q-page>
     </q-page-container>
   </q-layout>
 </template>
@@ -36,7 +38,7 @@ export default {
       this.loadProfile()
         .then(() => {
           this.show = true
-          if (this.profile.interests[0].subinterests.length > 0) {
+          if (this.profile.interests[0].subinterests.length) {
             this.$router.push('/chats')
           }
         })

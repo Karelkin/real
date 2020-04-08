@@ -10,24 +10,26 @@
         <q-btn class="self-end q-ml-sm" size="12px" @click="mute" round color="yellow-1" :icon="!muteProp ? 'volume_up' : 'volume_off'" />
       </div>
     </div>
-    <div class="chat__messages">
-      <q-infinite-scroll reverse>
-        <q-chat-message
-            v-for="(item, index) in messages"
-            :key="index"
-            :name="item.user.login"
-            :avatar="item.user.img_url"
-            :text="[item.message]"
-            :sent="item.user.login === profile.login"
-        />
-      </q-infinite-scroll>
+    <div class="chat__messages row">
+      <div class="col scroll-y">
+        <q-infinite-scroll id="scroll" reverse>
+          <q-chat-message
+              v-for="(item, index) in messages"
+              :key="index"
+              :name="item.user.login"
+              :avatar="item.user.img_url"
+              :text="[item.message]"
+              :sent="item.user.login === profile.login"
+          />
+        </q-infinite-scroll>
+      </div>
     </div>
     <div id="audio-wrapper" class="hidden">
       <div class="label">Remote audio:</div>
       <audio id="audio2" autoplay controls></audio>
     </div>
     <div class="chat__input">
-      <input type="text" v-model="message">
+      <q-input style="width: 95%; margin: 0 15px 0 10px;" borderless type="text" autogrow v-model="message" />
       <q-btn @click="sendMessage(message)" round color="yellow-1" size="12px" icon="send" />
     </div>
   </div>
@@ -50,6 +52,11 @@ export default {
       members: [],
       voiceProp: true,
       muteProp: false
+    }
+  },
+  watch: {
+    messages: function () {
+      return this.messages
     }
   },
   computed: {
@@ -153,6 +160,9 @@ export default {
 
       this.channel.bind('message-created', (data) => {
         this.messages.push(data)
+        setTimeout(() => {
+          window.scrollTo(0, document.getElementById('scroll').clientHeight + 67)
+        }, 300)
       })
 
       this.channel.bind('client-signal-' + this.mainUserId, (signal) => {
@@ -231,26 +241,30 @@ export default {
       .then(() => {
         this.pusherSetup()
       })
-    setTimeout(() => {
-      const channel = `presence-voice-channel-${this.$route.params.id}`
-      this.loadUsers(channel)
-        .then(() => {
-          this.members = this.roomUsers
-        })
-    }, 2500)
+      .then(() => {
+        setTimeout(() => {
+          const channel = `presence-voice-channel-${this.$route.params.id}`
+          this.loadUsers(channel)
+            .then(() => {
+              this.members = this.roomUsers
+            })
+        }, 2500)
+      })
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .chat {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
   &__messages {
-    margin: 50px 10px;
-    position: fixed;
-    bottom: 0;
+    margin: 60px 10px 70px;
+    /*position: absolute;*/
+    /*height: 100%;*/
+    /*bottom: 70px;*/
     width: 95%;
   }
   &__input {
@@ -260,19 +274,15 @@ export default {
     display: flex;
     z-index: 999;
     background: white;
-    height: 45px;
+    height: auto;
     padding: 5px 0;
     box-shadow: 0px -1px 5px rgba(105, 105, 105, 1);
-    input {
-      /*border-radius: 15px;*/
-      padding: 0 10px;
-      margin: 0 15px 0 10px;
-      width: 95%;
-      outline: none;
-      border: none;
-    }
     button {
-      margin-right: 5px;
+      position: relative;
+      right: 5px;
+      top: 0;
+      bottom: 0;
+      margin: auto 0;
     }
   }
   &__title {

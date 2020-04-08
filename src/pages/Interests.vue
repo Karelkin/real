@@ -1,5 +1,11 @@
 <template>
   <div class="interests">
+    <div class="example_like">
+      <p>Like</p>
+    </div>
+    <div class="example__dislike">
+      <p>Dislike</p>
+    </div>
     <vue-swing
         @throwout="onThrowout"
         @throwin="onThrowin"
@@ -139,6 +145,41 @@ export default {
 .interests {
   padding: 0 35px 20px 35px;
   height: 100vh;
+  position: relative;
+  .example_like,
+  .example__dislike {
+    position: absolute;
+    height: 320px;
+    width: 180px;
+    top: calc(20% - 100px);
+    border-radius: 20px;
+  }
+  .example_like {
+    right: 5px;
+    border: 2px solid greenyellow;
+    p {
+      font-size: 40px;
+      transform: rotate(90deg);
+      color: greenyellow;
+      position: absolute;
+      right: -10px;
+      top: calc(50% - 30px);
+      text-transform: uppercase;
+    }
+  }
+  .example__dislike {
+    left: 5px;
+    border: 2px solid red;
+    p {
+      position: absolute;
+      font-size: 40px;
+      transform: rotate(-90deg);
+      color: red;
+      left: -40px;
+      top: calc(50% - 30px);
+      text-transform: uppercase;
+    }
+  }
   .button {
     display: flex;
     justify-content: center;

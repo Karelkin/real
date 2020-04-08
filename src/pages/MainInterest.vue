@@ -86,7 +86,7 @@ export default {
   opacity: 1 !important;
 }
 .interest {
-  padding: 60px 35px 40px 35px;
+  padding: 20px 35px 40px 35px;
   .button {
     display: flex;
     justify-content: center;
@@ -121,7 +121,7 @@ export default {
           bottom .2s ease,
           left .2s ease,
           right .2s ease;
-      margin-top: -40px;
+      margin-top: -50px;
       display: flex;
       justify-content: center;
       align-items: center;
