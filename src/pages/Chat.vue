@@ -155,7 +155,6 @@ export default {
           }
         }
         this.messages.push(data)
-        // this.
       })
 
       this.channel.bind('message-created', (data) => {
@@ -235,8 +234,6 @@ export default {
       .then(stream => {
         this.userStream = stream
         this.mainUserId = this.profile.id
-
-      // statusText.textContent = 'Успешно... Нажмите Call';
       })
       .then(() => {
         this.pusherSetup()
@@ -261,11 +258,9 @@ export default {
   flex-direction: column;
   position: relative;
   &__messages {
-    margin: 60px 10px 70px;
-    /*position: absolute;*/
-    /*height: 100%;*/
-    /*bottom: 70px;*/
-    width: 95%;
+    margin: 60px 0 70px;
+    padding: 0 10px;
+    width: 100%;
   }
   &__input {
     position: fixed;

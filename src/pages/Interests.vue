@@ -213,8 +213,9 @@ export default {
   overflow: hidden;
   z-index: 999;
   p {
-    font-size: 40px;
-    transform: rotate(-45deg);
+    font-size: 32px;
+    transform: rotate(-55deg);
+    text-align: center;
   }
 }
 </style>

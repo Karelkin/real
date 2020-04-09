@@ -4,20 +4,46 @@
       <h2>Sign up</h2>
     </div>
     <div class="login__block">
-      <q-card class="block">
-        <div class="user">
-          <q-input class="q-mb-md" v-model="user.login" filled type="text" hint="Login" />
-          <q-input class="q-mb-md" v-model="user.password" filled type="password" hint="Password" />
-          <q-input class="q-mb-md" v-model="user.password2" filled type="password" hint="Confirm password" />
-        </div>
-        <q-card-actions class="button q-mt-lg" align="center">
-          <q-btn @click="register(user)" color="yellow-1" text-color="black" label="Sign up" size="24px" no-caps />
-        </q-card-actions>
-        <div class="links">
-          <router-link to="/login" exact-active-class='link-active'>Sign in</router-link>
-          <router-link to="/registration" exact-active-class='link-active'>Sign up</router-link>
-        </div>
-      </q-card>
+      <form @submit.prevent.stop="onSubmit">
+        <q-card class="block">
+          <div class="user">
+            <q-input class="q-mb-md"
+                     v-model="user.login"
+                     filled
+                     type="text"
+                     hint="Login"
+                     :rules="[val => !!val || 'Field is required']"
+                     ref="login"
+                     lazy-rules
+            />
+            <q-input class="q-mb-md"
+                     v-model="user.password"
+                     filled
+                     type="password"
+                     hint="Password"
+                     :rules="[val => !!val || 'Field is required']"
+                     ref="password"
+                     lazy-rules
+            />
+            <q-input class="q-mb-md"
+                     v-model="user.password2"
+                     filled
+                     type="password"
+                     hint="Confirm password"
+                     :rules="[val => !!val || 'Field is required']"
+                     ref="password2"
+                     lazy-rules
+            />
+          </div>
+          <q-card-actions class="button q-mt-lg" align="center">
+            <q-btn type="submit" color="yellow-1" text-color="black" label="Sign up" size="24px" no-caps />
+          </q-card-actions>
+          <div class="links">
+            <router-link to="/login" exact-active-class='link-active'>Sign in</router-link>
+            <router-link to="/registration" exact-active-class='link-active'>Sign up</router-link>
+          </div>
+        </q-card>
+      </form>
     </div>
   </div>
 </template>
@@ -39,6 +65,17 @@ export default {
     ...mapActions({
       registerRequest: 'user/REGISTER_REQUEST'
     }),
+    onSubmit () {
+      this.$refs.login.validate()
+      this.$refs.password.validate()
+      this.$refs.password2.validate()
+
+      if (this.$refs.login.hasError || this.$refs.password.hasError || this.$refs.password2.hasError) {
+        this.formHasError = true
+      } else {
+        this.register(this.user)
+      }
+    },
     register (user) {
       this.registerRequest(user)
         .then(() => {

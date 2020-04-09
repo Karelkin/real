@@ -4,19 +4,37 @@
       <h2>Sign in</h2>
     </div>
     <div class="login__block">
-      <q-card class="block">
-        <div class="user">
-          <q-input class="q-mb-md" v-model="user.login" filled type="text" hint="Login" />
-          <q-input class="q-mb-md" v-model="user.password" filled type="password" hint="Password" />
-        </div>
-        <q-card-actions class="button q-mt-lg" align="center">
-          <q-btn @click="login(user)" color="yellow-1" text-color="black" label="Sign in" size="24px" no-caps />
-        </q-card-actions>
-        <div class="links">
-          <router-link to="/login" exact-active-class='link-active'>Sign in</router-link>
-          <router-link to="/registration" exact-active-class='link-active'>Sign up</router-link>
-        </div>
-      </q-card>
+      <form @submit.prevent.stop="onSubmit">
+        <q-card class="block">
+          <div class="user">
+            <q-input class="q-mb-md"
+                     v-model="user.login"
+                     filled
+                     type="text"
+                     hint="Login"
+                     :rules="[val => !!val || 'Field is required']"
+                     ref="login"
+                     lazy-rules
+            />
+            <q-input class="q-mb-md"
+                     v-model="user.password"
+                     filled
+                     type="password"
+                     hint="Password"
+                     :rules="[val => !!val || 'Field is required']"
+                     ref="password"
+                     lazy-rules
+            />
+          </div>
+          <q-card-actions class="button q-mt-lg" align="center">
+            <q-btn type="submit" color="yellow-1" text-color="black" label="Sign in" size="24px" no-caps />
+          </q-card-actions>
+          <div class="links">
+            <router-link to="/login" exact-active-class='link-active'>Sign in</router-link>
+            <router-link to="/registration" exact-active-class='link-active'>Sign up</router-link>
+          </div>
+        </q-card>
+      </form>
     </div>
   </div>
 </template>
@@ -44,13 +62,22 @@ export default {
       loginRequest: 'user/AUTH_REQUEST',
       loadProfile: 'user/LOAD_PROFILE'
     }),
+    onSubmit () {
+      this.$refs.login.validate()
+      this.$refs.password.validate()
+
+      if (this.$refs.login.hasError || this.$refs.password.hasError) {
+        this.formHasError = true
+      } else {
+        this.login(this.user)
+      }
+    },
     login (user) {
       this.loginRequest(user)
         .then(() => {
           this.loadProfile()
             .then(() => {
               if (this.profile.interests[0]) {
-                // this.$router.push('/chats')
                 location.href = '/chats'
               } else {
                 this.$router.push('/')
