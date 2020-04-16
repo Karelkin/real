@@ -24,9 +24,12 @@
         </q-infinite-scroll>
       </div>
     </div>
+    <div id="video-wrapper" class="video-wrapper">
+      <video id="myVideo" autoplay playsinline muted></video>
+    </div>
     <div id="audio-wrapper" class="hidden">
-      <div class="label">Remote audio:</div>
-      <audio id="audio2" autoplay controls></audio>
+<!--      <div class="label">Remote audio:</div>-->
+<!--      <audio id="audio2" autoplay controls></audio>-->
     </div>
     <div class="chat__input">
       <q-input style="width: 95%; margin: 0 15px 0 10px;" borderless type="text" autogrow v-model="message" />
@@ -77,7 +80,7 @@ export default {
       this.muteProp = !this.muteProp
       this.members.forEach(elem => {
         if (elem.id !== this.profile.id) {
-          document.getElementById(`audiostream-${elem.id}`).muted = this.muteProp
+          document.getElementById(`videostream-${elem.id}`).muted = this.muteProp
         }
       })
     },
@@ -99,7 +102,9 @@ export default {
       // eslint-disable-next-line promise/param-names,no-async-promise-executor
       return new Promise(async (res, rej) => {
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true })
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+          document.getElementById('myVideo').srcObject = stream
+          // audioStream.srcObject = stream
           res(stream)
         } catch (err) {
           throw new Error(`Unable to fetch stream ${err}`)
@@ -141,6 +146,7 @@ export default {
       })
 
       this.channel.bind('pusher:member_removed', (member) => {
+        document.getElementById(`videostream-${member.id}`).remove()
         this.members = []
         const channel = `presence-voice-channel-${this.$route.params.id}`
         this.loadUsers(channel)
@@ -203,14 +209,28 @@ export default {
       })
 
       peer.on('stream', (stream) => {
-        const newAudioStream = document.createElement('audio')
-        newAudioStream.setAttribute('autoplay', 'true')
-        newAudioStream.controls = true
-        newAudioStream.autoplay = true
-        newAudioStream.id = 'audiostream-' + userId
-        document.getElementById('audio-wrapper').appendChild(newAudioStream)
+        // const newAudioStream = document.createElement('audio')
+        // newAudioStream.setAttribute('autoplay', 'true')
+        // newAudioStream.controls = true
+        // newAudioStream.autoplay = true
+        // newAudioStream.id = 'audiostream-' + userId
+        // document.getElementById('audio-wrapper').appendChild(newAudioStream)
+        //
+        // const audioStream = document.getElementById('audiostream-' + userId)
+        //
+        // if (audioStream.srcObject !== stream) {
+        //   audioStream.srcObject = stream
+        // }
 
-        const audioStream = document.getElementById('audiostream-' + userId)
+        const newAudioStream = document.createElement('video')
+        newAudioStream.setAttribute('autoplay', 'true')
+        newAudioStream.controls = false
+        // newAudioStream.autoplay = true
+        // newAudioStream.playsinline = true
+        newAudioStream.id = 'videostream-' + userId
+        document.getElementById('video-wrapper').appendChild(newAudioStream)
+
+        const audioStream = document.getElementById('videostream-' + userId)
 
         if (audioStream.srcObject !== stream) {
           audioStream.srcObject = stream
@@ -252,13 +272,29 @@ export default {
 </script>
 
 <style lang="scss">
+.video-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  position: absolute;
+  top: 57px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  max-width: 1000px;
+  video {
+    width: 20vw;
+    height: auto;
+    max-height: 70px;
+  }
+}
 .chat {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   position: relative;
   &__messages {
-    margin: 60px 0 70px;
+    margin: 130px 0 70px;
     padding: 0 10px;
     width: 100%;
   }

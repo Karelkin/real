@@ -27,7 +27,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadProfile: 'user/LOAD_PROFILE'
+      loadProfile: 'user/LOAD_PROFILE',
+      logout: 'user/AUTH_LOGOUT'
     })
   },
   beforeMount () {
@@ -41,6 +42,9 @@ export default {
           if (this.profile.interests[0].subinterests.length) {
             this.$router.push('/chats')
           }
+        })
+        .catch(() => {
+          this.logout()
         })
     }
   }
