@@ -27,10 +27,10 @@
     <div id="video-wrapper" class="video-wrapper">
       <video id="myVideo" autoplay playsinline muted></video>
     </div>
-    <div id="audio-wrapper" class="hidden">
+    <!-- <div id="audio-wrapper" class="hidden"> -->
 <!--      <div class="label">Remote audio:</div>-->
 <!--      <audio id="audio2" autoplay controls></audio>-->
-    </div>
+    <!-- </div> -->
     <div class="chat__input">
       <q-input style="width: 95%; margin: 0 15px 0 10px;" borderless type="text" autogrow v-model="message" />
       <q-btn @click="sendMessage(message)" round color="yellow-1" size="12px" icon="send" />
@@ -104,7 +104,6 @@ export default {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
           document.getElementById('myVideo').srcObject = stream
-          // audioStream.srcObject = stream
           res(stream)
         } catch (err) {
           throw new Error(`Unable to fetch stream ${err}`)
@@ -276,7 +275,7 @@ export default {
   display: flex;
   justify-content: center;
   width: 100vw;
-  position: absolute;
+  position: fixed;
   top: 57px;
   left: 0;
   right: 0;
@@ -285,7 +284,7 @@ export default {
   video {
     width: 20vw;
     height: auto;
-    max-height: 70px;
+    max-height: 100px;
   }
 }
 .chat {
