@@ -282,7 +282,7 @@ export default {
   margin: 0 auto;
   max-width: 1000px;
   video {
-    width: 20vw;
+    width: 16vw;
     height: auto;
     max-height: 100px;
   }
