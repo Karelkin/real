@@ -113,7 +113,7 @@ export default {
     pusherSetup () {
       Pusher.logToConsole = true
       const pusher = new Pusher('ef46f298b0c2bd8c3f46', {
-        authEndpoint: '/api/auth/pusher',
+        authEndpoint: 'https://real-app.ru/api/auth/pusher',
         cluster: 'eu',
         auth: {
           headers: {
@@ -223,6 +223,7 @@ export default {
 
         const newAudioStream = document.createElement('video')
         newAudioStream.setAttribute('autoplay', 'true')
+        newAudioStream.setAttribute('playsinline', 'true')
         newAudioStream.controls = false
         // newAudioStream.autoplay = true
         // newAudioStream.playsinline = true
@@ -308,7 +309,6 @@ export default {
     padding: 5px 0;
     box-shadow: 0px -1px 5px rgba(105, 105, 105, 1);
     button {
-      position: relative;
       right: 5px;
       top: 0;
       bottom: 0;

@@ -9,7 +9,11 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "build": "quasar build",
+    "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
+    "start:dev": "quasar dev",
+    "start:prod": "node server.js"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -20,9 +24,7 @@
     "quasar": "^1.0.0",
     "simple-peer": "^9.6.2",
     "swing": "^3.1.4",
-    "vue-swing": "^0.0.10"
-  },
-  "devDependencies": {
+    "vue-swing": "^0.0.10",
     "@quasar/app": "^1.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.8.0",
@@ -33,6 +35,8 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.1.2"
+  },
+  "devDependencies": {
   },
   "engines": {
     "node": ">= 10.18.1",

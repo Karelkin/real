@@ -3,6 +3,9 @@
 
 module.exports = function (ctx) {
   return {
+    bin: {
+      // windowsAndroidStudio: 'D:\\Program Files\\Android Studio\\bin\\studio64.exe'
+    },
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
@@ -82,9 +85,9 @@ module.exports = function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      https: false,
-      port: 8080,
-      open: true // opens browser window automatically
+      port: process.env.PORT || 5000,
+      open: true,
+      public: process.env.PUBLIC_URL || `localhost:${process.env.PORT || 5000}`
     },
 
     // animations: 'all', // --- includes all animations

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const BASE_URL = '/'
+export const BASE_URL = 'https://real-app.ru/'
 
 const API = axios.create({
   baseURL: BASE_URL
