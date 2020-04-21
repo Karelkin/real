@@ -26,6 +26,10 @@
     </div>
     <div id="video-wrapper" class="video-wrapper">
       <video id="myVideo" autoplay playsinline muted></video>
+      <video  autoplay playsinline muted>
+        <source src="../statics/Landscape.mp4" type="video/mp4">
+      </video>
+<!--      <video id="myVideo2" src="https://www.youtube.com/watch?v=8iU8LPEa4o0" autoplay playsinline muted></video>-->
     </div>
     <!-- <div id="audio-wrapper" class="hidden"> -->
 <!--      <div class="label">Remote audio:</div>-->
