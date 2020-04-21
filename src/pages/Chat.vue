@@ -222,10 +222,10 @@ export default {
         // }
 
         const newAudioStream = document.createElement('video')
-        newAudioStream.setAttribute('autoplay', 'true')
+        // newAudioStream.setAttribute('autoplay', 'true')
         newAudioStream.controls = false
-        // newAudioStream.autoplay = true
-        // newAudioStream.playsinline = true
+        newAudioStream.autoplay = true
+        newAudioStream.playsinline = true
         newAudioStream.id = 'videostream-' + userId
         document.getElementById('video-wrapper').appendChild(newAudioStream)
 
@@ -281,6 +281,8 @@ export default {
   right: 0;
   margin: 0 auto;
   max-width: 1000px;
+  background: white;
+  border: 1px solid black;
   video {
     width: 16vw;
     height: auto;

@@ -94,7 +94,7 @@ export default {
     button {
       opacity: 0.8;
       border-radius: 10px;
-      width: 270px;
+      min-width: 270px;
       height: 50px;
       font-weight: 400;
     }
@@ -122,6 +122,7 @@ export default {
           left .2s ease,
           right .2s ease;
       margin-top: -50px;
+      text-align: center;
       display: flex;
       justify-content: center;
       align-items: center;
