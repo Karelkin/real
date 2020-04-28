@@ -221,12 +221,12 @@ export default {
         //   audioStream.srcObject = stream
         // }
 
-        const newAudioStream = document.createElement('video')
-        newAudioStream.controls = false
-        newAudioStream.autoplay = true
-        newAudioStream.setAttribute('playsinline', '')
-        newAudioStream.id = 'videostream-' + userId
-        document.getElementById('video-wrapper').appendChild(newAudioStream)
+        const newVideoStream = document.createElement('video')
+        newVideoStream.controls = false
+        newVideoStream.autoplay = true
+        newVideoStream.setAttribute('playsinline', '')
+        newVideoStream.id = 'videostream-' + userId
+        document.getElementById('video-wrapper').appendChild(newVideoStream)
 
         const audioStream = document.getElementById('videostream-' + userId)
 
